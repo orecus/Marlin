@@ -62,49 +62,56 @@
 // For a Delta printer start with one of the configuration files in the
 // config/examples/delta directory and customize for your machine.
 //
-//-------Hardware--------
-//#define STOCK
 
-/*------Drivers---(TMC)-----*/
-//#define QQS         //(S) A4988
-//#define QQS_TMC     //(8) TMC220x For 2208 or 2209
-#define QQS_UART      //(U8) Remove module ESP12
+//-------Hardware--------
+/*    ONLY ONE CAN BE SELECTED    */
+//#define STOCK                         //QQ-S with Stock board and A4988 Drivers
+//#define QQS                           //QQ-S with FLSUN HiSpeed board and A4988 Drivers
+//#define QQS_TMC                       //QQ-S with FLSUN HiSpeed board and TMC2208 in Standalone mode
+#define QQS_UART                      //QQ-S with FLSUN HiSpeed board and TMC2208 modified to support UART
 
 /*    Modules       */
-//#define ESP_WIFI //(W) Module ESP8266/ESP12
+//#define ESP_WIFI                      //WIFI Module ESP8266/ESP12, can not be used with QQS_UART.
+
+/*    Speed       */
+/*    ONLY ONE CAN BE SELECTED    */
+#define SPEED_SLOW                      //(100 * 40) //4000
+//#define SPEED_NORMAL                    //(100 * 60) //6000
+//#define SPEED_FAST                      //(100 * 80) //8000
 
 /*    Hotend / Extruder       */
-//#define HOTEND_E3D_V6     //Preconfigured for a Genuine E3D V6 Hotend
+//#define HOTEND_E3D_V6                 //Preconfigured temperature ranges for a Genuine E3D V6 Hotend, if not used a stock hotend is expected.
 
-//#define EXT_BMG           //(B) Extruder
-//#define EXT_E3D_HEMERA    //Preconfigured for a Genuine E3D HEMERA Extruder
-#define EXT_STOCK           //Preconfigured for the stock extruder on QQS-PRO
+/*    ONLY ONE CAN BE SELECTED    */
+//#define EXT_BMG                       //Preconfigured for a BMG Extruder
+//#define EXT_E3D_HEMERA                //Preconfigured for a Genuine E3D HEMERA Extruder
+#define EXT_STOCK                     //Preconfigured for stock extruder on QQS-PRO
 
 /*-------OPTIONS---(FSMC)-----*/
-//Choice UI TFT
-#define FSMC_GRAPHICAL_TFT  //(F) UI STANDARD
-//#define TFT_320x240       //(C) UI MARLIN (too big with mode UART+UBL)
-//#define TFT_LVGL_UI_FSMC  //(I) UI MKS  => (Bug)
+/*    ONLY ONE CAN BE SELECTED    */
+//#define FSMC_GRAPHICAL_TFT            //STANDARD UI
+#define TFT_320x240                   //MARLIN UI
+//#define TFT_LVGL_UI_FSMC              //MKS UI => (Not tested)
 
 //Choice menu: (OPT)
-#define DELTA_CALIBRATION_MENU   //NC LVGL
-#define PID_EDIT_MENU            //
-#define PID_AUTOTUNE_MENU        //
-#define PAUSE_BEFORE_DEPLOY_STOW //Message Stow/remove Probe (bug UI Marlin)
+#define DELTA_CALIBRATION_MENU          //Menu Options for starting Delta Configuration
+#define PID_EDIT_MENU                   //Menu Options for PID Configuration
+#define PID_AUTOTUNE_MENU               //Menu Options for PID Autotune Configuration
+//#define PAUSE_BEFORE_DEPLOY_STOW        //Message Stow/Remove Probe (Buggy with Marlin UI)
 
 //  Type Calibration (CAL)
-//#define AUTO_BED_LEVELING_BILINEAR  //(A)
-#define AUTO_BED_LEVELING_UBL //(U) with UART mode FSMC
+/*    ONLY ONE CAN BE SELECTED    */
+//#define AUTO_BED_LEVELING_BILINEAR     //Bilinear Bed Leveling
+#define AUTO_BED_LEVELING_UBL          //UBL Bed Leveling
 
 //Many options for Modules:
-#define POWER_LOSS_RECOVERY //NC LVGL pb SD
-//#define FILAMENT_RUNOUT_SENSOR //NC LVGL
-#define ADVANCED_PAUSE_FEATURE //NC LVGL
-#define LIN_ADVANCE            //(L) Possible Bug with BabyStep.For TMC_UART prefer mode spreadCycle
+#define POWER_LOSS_RECOVERY            //Power Loss support when printing from SD-Card
+//#define FILAMENT_RUNOUT_SENSOR         //Enables support for Filament Runout Sensors
+#define ADVANCED_PAUSE_FEATURE         //Enables Advanced Pause features
+#define LIN_ADVANCE                    //Enables Linear Advance. Possible Bug with BabyStep. When enabled, SPREADCYCLE is automaticlly set for Extruder, otherwise STEALTHCHOP will be used on all drivers.
 
-// Option for Octoprint: //OCTO
-#define HOST_ACTION_COMMANDS //Action Command Prompt support Message on Octoprint
-//Bin transfert
+// Option for Octoprint:
+#define HOST_ACTION_COMMANDS           //Action Command Prompt support Message on Octoprint
 
 //===========================================================================
 //============================= SCARA Printer ===============================
@@ -517,9 +524,9 @@
  */
 
 #ifdef HOTEND_E3D_V6
-#define TEMP_SENSOR_0 5
+  #define TEMP_SENSOR_0 5
 #else
-#define TEMP_SENSOR_0 1
+  #define TEMP_SENSOR_0 1
 #endif
 
 //#define TEMP_SENSOR_0 1
@@ -1737,7 +1744,16 @@
 #endif
 
 // Delta only homes to Z
-#define HOMING_FEEDRATE_Z (100 * 45) //6000
+#ifdef SPEED_SLOW
+  #define HOMING_FEEDRATE_Z (100 * 40) //4000
+#endif
+#ifdef SPEED_NORMAL
+  #define HOMING_FEEDRATE_Z (100 * 60) //6000
+#endif
+#ifdef SPEED_FAST
+  #define HOMING_FEEDRATE_Z (100 * 80) //8000
+#endif
+
 
 // Validate that endstops are triggered on homing moves
 #define VALIDATE_HOMING_ENDSTOPS

@@ -2478,9 +2478,15 @@
    * When disabled, Marlin will use spreadCycle stepping mode.
    */
 
-#define STEALTHCHOP_XY
-#define STEALTHCHOP_Z
-//#define STEALTHCHOP_E //For LA
+#ifdef LIN_ADVANCE
+   #define STEALTHCHOP_XY
+   #define STEALTHCHOP_Z
+   //#define STEALTHCHOP_E //Disabled for LA
+#else
+   #define STEALTHCHOP_XY
+   #define STEALTHCHOP_Z
+   #define STEALTHCHOP_E
+#endif
 
 /**
    * Optimize spreadCycle chopper parameters by using predefined parameter sets

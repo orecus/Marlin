@@ -11,10 +11,17 @@ This branch is updated to work with the latest PlattformIO release and is based 
 To build the firmware yourself, you need Visual Studio Code with the PlattformIO extension. Once setup, make the changes you want and from the PIO tab build either `env:flsun_hispeed` or `env:mks_robin_mini` after you made the applicable changes in `configuration.h` depending on which board and settings you use.
 
 # Firmware Files
-Different versions of Firmware for the FLSUN Printers. For TMC2208 on the HiSpeed Board you need to do hardware modifications. Follow this guide: [SOURCE](https://www.youtube.com/watch?v=7ShcFKXrVHo)
+Different versions of Firmware for the FLSUN Printers. For TMC2208 on the HiSpeed Board you need to do hardware modifications. Follow this [VIDEO](https://www.youtube.com/watch?v=7ShcFKXrVHo).
 
 ## **QQ-S PRO (TMC2208 UART, E3D V6, E3D Hemera, Linear Advance)**
 Preconfigured for Genuine E3D Hemera Extruder and Genuine E3D V6 Hotend with TMC2208 drivers (HiSpeed Board), modified to support UART.
+
+### `QQ-S PRO (TMC2208 UART, E3D V6, E3D Hemera, Linear Advance) - 2020-09-22.bin`
+- Build Date: 2020-09-22
+- Marlin v2.0.6.1
+  - Branch: `bugfix-2.0.x`
+  - CommitId: `d93471fdad8ebabc460a7eb697c3ac61ea2617eb`
+- **Settings:** TMC2208 UART, Linear Advance, UBL, TFT 320x240 Display
 
 ### `QQ-S PRO (TMC2208 UART, E3D V6, E3D Hemera, Linear Advance) - 2020-09-17.bin`
 - Build Date: 2020-09-17
@@ -26,6 +33,13 @@ Preconfigured for Genuine E3D Hemera Extruder and Genuine E3D V6 Hotend with TMC
 ## **QQ-S PRO (TMC2208 UART, Stock, Linear Advance)**
 Preconfigured for stock Hotend and Extruder with TMC2208 drivers (HiSpeed Board), modified to support UART.
 
+### `QQ-S PRO (TMC2208 UART, Stock, Linear Advance) - 2020-09-22.bin`
+- Build Date: 2020-09-22
+- Marlin v2.0.6.1
+  - Branch: `bugfix-2.0.x`
+  - CommitId: `d93471fdad8ebabc460a7eb697c3ac61ea2617eb`
+- **Settings:** TMC2208 UART, Linear Advance, UBL, TFT 320x240 Display
+
 ### `QQ-S PRO (TMC2208 UART, Stock, Linear Advance) - 2020-09-17.bin`
 - Build Date: 2020-09-17
 - Marlin v2.0.6.1
@@ -34,7 +48,6 @@ Preconfigured for stock Hotend and Extruder with TMC2208 drivers (HiSpeed Board)
 - **Settings:** TMC2208 UART, Linear Advance, UBL, FSMC Display
 
 # Setup
-This Setup is based upon the FB post, but shortend so refer to the post for more details.
 
 1. Start by initializing EEPROM
    * Configuration/Advanced Settings/Initialize EEPROM
@@ -42,7 +55,7 @@ This Setup is based upon the FB post, but shortend so refer to the post for more
 3. Start the delta calibration
    * Configuration/Delta Calibration/Auto Calibration
 4. Start bed leveling
-   * Motion/Level Bed (See the "UBL Calibration" section for more details)
+   * Motion/Level Bed (See the `UBL Calibration` section for more details)
 5. Remove the leveling switch.
 6. Turn off soft end stops to make it possible to move z below zero
    * Motion/Move Axis/Soft Endstops
@@ -51,7 +64,7 @@ This Setup is based upon the FB post, but shortend so refer to the post for more
 8. Now note the Z height that the printer is at, should be negative, and use this value as Probe offset.
    * Configuration/Probe Z offset
    * As the menu goes 0.01 mm per touch this can be easier to do if you have it connected to the USB with pronterface or Octoprint, then this is done with M851, for example if the offset is 8.45 mm then send 'M851 Z-8.45'
-9. Now configuration is done, save to EEPROM (Coinfiguration/Store Settings)
+9. Now configuration is done, save to EEPROM (Configuration/Store Settings)
 
 ## General Calibration
 
@@ -112,20 +125,76 @@ Below is a list fo great plugins for Octoprint that I can recomend checking out.
 * Bed Visualizer
   * If your are using UBL, set the GCODE in the settings to `G29 T`.
 * DuCalibrator
-  * Set the GCODE Start commands to `G28`
+  * Set the GCODE Start commands to only `G28`.
 * OctoPrint-WideScreen
 * Opitemp Plugin
 * Preheat Button
 * Terminal Commands
   * If you configure the below commands, you can run them in order from the ```Terminal``` tab to calibrate your printer.
-  * Delta Calibration ```G33```
-  * Bed Level - Probe ```G28; G29 P1```
-  * Bed Level - Correct Points ```G29 P3 T```
-  * Bed Level - Verify ```G29 T```
-  * Bed Level - Save ```G29 S1; G29 F 10.0; M500```
-  * Bed Level - Activate ```G29 A; M420 S1```
-  * Configuration ```M501```
-  * Save Configuration ```M500```
+  * Delta Calibration      ```G33```
+  * UBL - Probe            ```G28; G29 P1```
+  * UBL - Correct Points   ```G29 P3 T```
+  * UBL - Verify           ```G29 T```
+  * UBL - Save             ```G29 S1; G29 F 10.0; M500```
+  * UBL - Activate         ```G29 A; M420 S1```
+  * Configuration          ```M501```
+  * Save Configuration     ```M500```
 
 * USBControl
   * Use this plugin if your printer is ON when the main power supply is turned off, it gets power from the USB cable and with this Plugin you can turn this off.
+
+# Configuration Options
+
+The following options are defined and can be commented out to disabled or commented in to enable their respective functionality in ```./Marlin/Configuration.h```
+
+```c
+//-------Hardware--------
+/*    ONLY ONE CAN BE SELECTED    */
+//#define STOCK                         //QQ-S with Stock board and A4988 Drivers
+//#define QQS                           //QQ-S with FLSUN HiSpeed board and A4988 Drivers
+//#define QQS_TMC                       //QQ-S with FLSUN HiSpeed board and TMC2208 in Standalone mode
+#define QQS_UART                      //QQ-S with FLSUN HiSpeed board and TMC2208 modified to support UART
+
+/*    Modules       */
+//#define ESP_WIFI                      //WIFI Module ESP8266/ESP12, can not be used with QQS_UART.
+
+/*    Speed       */
+/*    ONLY ONE CAN BE SELECTED    */
+#define SPEED_SLOW                      //(100 * 40) //4000
+//#define SPEED_NORMAL                    //(100 * 60) //6000
+//#define SPEED_FAST                      //(100 * 80) //8000
+
+/*    Hotend / Extruder       */
+//#define HOTEND_E3D_V6                 //Preconfigured temperature ranges for a Genuine E3D V6 Hotend, if not used a stock hotend is expected.
+
+/*    ONLY ONE CAN BE SELECTED    */
+//#define EXT_BMG                       //Preconfigured for a BMG Extruder
+//#define EXT_E3D_HEMERA                //Preconfigured for a Genuine E3D HEMERA Extruder
+#define EXT_STOCK                     //Preconfigured for stock extruder on QQS-PRO
+
+/*-------OPTIONS---(FSMC)-----*/
+/*    ONLY ONE CAN BE SELECTED    */
+//#define FSMC_GRAPHICAL_TFT            //STANDARD UI
+#define TFT_320x240                   //MARLIN UI
+//#define TFT_LVGL_UI_FSMC              //MKS UI => (Not tested)
+
+//Choice menu: (OPT)
+#define DELTA_CALIBRATION_MENU          //Menu Options for starting Delta Configuration
+#define PID_EDIT_MENU                   //Menu Options for PID Configuration
+#define PID_AUTOTUNE_MENU               //Menu Options for PID Autotune Configuration
+//#define PAUSE_BEFORE_DEPLOY_STOW        //Message Stow/Remove Probe (Buggy with Marlin UI)
+
+//  Type Calibration (CAL)
+/*    ONLY ONE CAN BE SELECTED    */
+//#define AUTO_BED_LEVELING_BILINEAR     //Bilinear Bed Leveling
+#define AUTO_BED_LEVELING_UBL          //UBL Bed Leveling
+
+//Many options for Modules:
+#define POWER_LOSS_RECOVERY            //Power Loss support when printing from SD-Card
+//#define FILAMENT_RUNOUT_SENSOR         //Enables support for Filament Runout Sensors
+#define ADVANCED_PAUSE_FEATURE         //Enables Advanced Pause features
+#define LIN_ADVANCE                    //Enables Linear Advance. Possible Bug with BabyStep. When enabled, SPREADCYCLE is automaticlly set for Extruder, otherwise STEALTHCHOP will be used on all drivers.
+
+// Option for Octoprint:
+#define HOST_ACTION_COMMANDS           //Action Command Prompt support Message on Octoprint
+```
